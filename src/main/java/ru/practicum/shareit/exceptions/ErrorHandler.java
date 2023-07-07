@@ -18,7 +18,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse ValidationException(final EmailValidationException e) {
+    public ErrorResponse handleEmailException(final EmailValidationException e) {
         return new ErrorResponse(String.format("Пользователь с таким email %s уже существует.", e.getMessage()));
     }
 
