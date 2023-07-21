@@ -7,7 +7,7 @@ import java.util.List;
 public interface ItemRepository {
     Item getItemById(long itemId);
 
-    List<Item> getItemsByUerId(long userId);
+    List<Item> getItemsByUserId(long userId);
 
     List<Item> getItemsByText(String text);
 

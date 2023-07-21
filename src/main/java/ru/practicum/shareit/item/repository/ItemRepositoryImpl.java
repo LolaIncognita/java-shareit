@@ -30,7 +30,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
 
     @Override
-    public List<Item> getItemsByUerId(long userId) {
+    public List<Item> getItemsByUserId(long userId) {
         if (!listItemsIdByUer.containsKey(userId)) {
             throw new NotFoundException("У пользователя с id = {} " + userId + " отсутствует вещи в базе данных.");
         }

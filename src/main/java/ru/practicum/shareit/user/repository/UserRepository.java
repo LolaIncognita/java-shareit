@@ -13,7 +13,9 @@ public interface UserRepository {
 
     User updateUser(long id, User user);
 
-    boolean deleteUser(long id);
+    void deleteUser(long id);
 
     boolean isEmailPresentInRepository(User user);
+
+    void deleteEmailInBase(String email);
 }

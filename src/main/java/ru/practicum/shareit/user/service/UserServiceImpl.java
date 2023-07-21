@@ -44,8 +44,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteUser(long id) {
-        return userRepository.deleteUser(id);
+    public void deleteUser(long id) {
+        userRepository.deleteUser(id);
     }
 
     private void validationBeforeAdd(UserDto userDto) {
@@ -74,6 +74,7 @@ public class UserServiceImpl implements UserService {
                     .toUser(userDto))) {
                 throw new EmailValidationException(String.format("%s уже есть в базе у другого пользователя", userDto.getEmail()));
             }
+            userRepository.deleteEmailInBase(user.getEmail());
             user.setEmail(userDto.getEmail());
         }
         return user;

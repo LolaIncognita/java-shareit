@@ -15,24 +15,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// TODO: 21.07.2023  private final ItemMapperStruct itemMapperStruct;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    // TODO: 21.07.2023  return itemMapperStruct.mapToItemDto(itemRepository.getItemById(itemId));
     @Override
     public ItemDto getItemById(long itemId) {
         return ItemMapper.toItemDto(itemRepository.getItemById(itemId));
     }
 
+    // TODO: 21.07.2023  return itemRepository.getItemsByUserId(userId).stream().map(itemMapperStruct::mapToItemDto).collect(Collectors.toList());
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
         userRepository.findUserById(userId);
-        return itemRepository.getItemsByUerId(userId).stream()
+        return itemRepository.getItemsByUserId(userId).stream()
                 .map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
+    // TODO: 21.07.2023  return itemRepository.getItemsByText(text).stream()
+    //  .map(itemMapperStruct::mapToItemDto).collect(Collectors.toList());
     @Override
     public List<ItemDto> getItemsByText(String text) {
         if (text.isBlank()) {
@@ -42,12 +47,14 @@ public class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
+    // TODO: 21.07.2023   return itemMapperStruct.mapToItemDto(itemRepository.addItem(userId, itemMapperStruct.mapToItem(itemDto)));
     @Override
     public ItemDto addItem(long userId, ItemDto itemDto) {
         validationBeforeAdd(userId, itemDto);
         return ItemMapper.toItemDto(itemRepository.addItem(userId, ItemMapper.toItem(itemDto)));
     }
 
+    // TODO: 21.07.2023  return itemMapperStruct.mapToItemDto(itemRepository.updateItem(item));
     @Override
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         Item item = validationBeforeUpdate(userId, itemId, itemDto);

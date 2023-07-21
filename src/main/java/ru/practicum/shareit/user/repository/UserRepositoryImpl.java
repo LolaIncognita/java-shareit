@@ -5,15 +5,13 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @Slf4j
 public class UserRepositoryImpl implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
+    private final HashSet<String> usersEmail = new HashSet<>();
 
     private long generatedId = 1;
 
@@ -23,9 +21,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public void deleteEmailInBase(String email) {
+        usersEmail.remove(email);
+    }
+
+    @Override
     public User findUserById(long id) {
         if (!users.containsKey(id)) {
-            throw new NotFoundException("Пользователь н найден.");
+            throw new NotFoundException("Пользователь не найден.");
         }
         return users.get(id);
     }
@@ -34,6 +37,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User addUser(User user) {
         user.setId(generatedId++);
         users.put(user.getId(), user);
+        usersEmail.add(user.getEmail());
         log.info("Добавлен новый пользователь с id = {}", user.getId());
         return user;
     }
@@ -41,26 +45,20 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User updateUser(long id, User user) {
         users.put(id, user);
+        usersEmail.add(user.getEmail());
         log.info("Обновлен пользователь с id = {}", user.getId());
         return user;
     }
 
     @Override
-    public boolean deleteUser(long id) {
+    public void deleteUser(long id) {
+        usersEmail.remove(users.get(id).getEmail());
         users.remove(id);
         log.info("Пользователь с id = {} удалён", id);
-        return true;
     }
 
     @Override
     public boolean isEmailPresentInRepository(User user) {
-        boolean isPresent = false;
-        for (User otherUser : users.values()) {
-            if (otherUser.getEmail().equals(user.getEmail())) {
-                isPresent = true;
-                break;
-            }
-        }
-        return isPresent;
+        return usersEmail.contains(user.getEmail());
     }
 }
