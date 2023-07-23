@@ -1,0 +1,21 @@
+package ru.practicum.shareit.user.repository;
+
+import ru.practicum.shareit.user.model.User;
+
+import java.util.List;
+
+public interface UserRepository {
+    List<User> findAllUsers();
+
+    User findUserById(long id);
+
+    User addUser(User user);
+
+    User updateUser(long id, User user);
+
+    void deleteUser(long id);
+
+    boolean isEmailPresentInRepository(User user);
+
+    void deleteEmailInBase(String email);
+}
