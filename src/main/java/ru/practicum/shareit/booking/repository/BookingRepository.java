@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.dto.BookingClosest;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
@@ -80,4 +81,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.start < CURRENT_TIMESTAMP " +
             "ORDER BY b.start DESC ")
     List<BookingClosest> findLastClosestBookingByOwnerId(long ownerId, long itemId);
+
+    @Query()
+    List<Booking> findAllByItemIdIn(List<Long> ids);
 }

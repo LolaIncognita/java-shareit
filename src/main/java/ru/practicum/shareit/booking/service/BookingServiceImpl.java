@@ -68,7 +68,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public BookingDtoResponse getBookingById(long bookingId, long userId) {
         checkPresenceAndReturnUserOrElseThrow(userId);
         Booking booking = checkPresenceAndReturnBookingOrElseThrow(bookingId);
@@ -80,7 +79,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookingDtoResponse> getBookingsByUserByState(String state, long userId) {
         checkPresenceAndReturnUserOrElseThrow(userId);
 
@@ -111,7 +109,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookingDtoResponse> getOwnerItemsBooked(String state, long userId) {
         checkPresenceAndReturnUserOrElseThrow(userId);
 
