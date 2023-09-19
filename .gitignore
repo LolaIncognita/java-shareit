@@ -20,6 +20,7 @@ HELP.md
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+checkstyle.xml
 
 ### STS ###
 .apt_generated
