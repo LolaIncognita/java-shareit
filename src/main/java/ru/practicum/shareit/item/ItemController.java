@@ -1,48 +1,87 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentRequestDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Slf4j
 @Validated
 public class ItemController {
+
     private final ItemService itemService;
 
-    @GetMapping("{itemId}")
-    public ItemDto getItemById(@PathVariable long itemId) {
-        return itemService.getItemById(itemId);
+    @PostMapping
+    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") long ownerId,
+                              @NotNull @RequestBody @Valid ItemDto itemDto) {
+        log.info("POST request received for item: {}", itemDto);
+        ItemDto response = itemService.createItem(ownerId, itemDto);
+        log.info("Item created: {}", response);
+        return response;
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemDto getItemById(@PathVariable long itemId,
+                               @RequestHeader("X-Sharer-User-Id") long ownerId) {
+        log.info("GET request received for item with id: {}", itemId);
+        ItemDto response = itemService.getItemByOwnerId(itemId, ownerId);
+        log.info("{}", response);
+        return response;
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getItemsByUserId(userId);
-    }
-
-    @GetMapping("/search")
-    public List<ItemDto> getItemsByText(@RequestParam String text) {
-        return itemService.getItemsByText(text);
-    }
-
-    @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @Valid @RequestBody ItemDto itemDto) {
-        return itemService.addItem(userId, itemDto);
+    public List<ItemDto> getItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") long ownerId) {
+        log.info("GET request received for items with owner id: {}", ownerId);
+        List<ItemDto> response = itemService.getAllItemsByOwnerId(ownerId);
+        log.info("{}", response);
+        return response;
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                              @PathVariable long itemId, @Valid @RequestBody ItemDto itemDto) {
-        return itemService.updateItem(userId, itemId, itemDto);
+    public ItemDto updateItem(@PathVariable long itemId,
+                              @RequestHeader("X-Sharer-User-Id") long ownerId,
+                              @RequestBody ItemDto itemDto) {
+        log.info("PATCH request received item with id: {}", itemId);
+        ItemDto response = itemService.updateItem(itemId, ownerId, itemDto);
+        log.info("Updated user: {}", response);
+        return response;
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> searchItems(@RequestParam String text) {
+        log.info("GET request received for query \"{}\"", text);
+        List<ItemDto> response = itemService.searchItems(text.toLowerCase());
+        log.info("{}", response);
+        return response;
+    }
+
+    @DeleteMapping("/{itemId}")
+    public void deleteItem(@PathVariable long itemId) {
+        log.info("DELETE request received item with id: {}", itemId);
+        itemService.deleteItem(itemId);
+        log.info("Item with id {} deleted", itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentResponseDto createCommentToItem(
+            @PathVariable long itemId,
+            @RequestHeader("X-Sharer-User-Id") long bookerId,
+            @RequestBody CommentRequestDto commentRequestDto
+    ) {
+        log.info("POST request received to post comment for item {}", itemId);
+        CommentResponseDto response = itemService.addComment(commentRequestDto, bookerId, itemId);
+        log.info("Comment {} from user {} for item {} created", commentRequestDto.getText(), bookerId, itemId);
+        return response;
     }
 }
