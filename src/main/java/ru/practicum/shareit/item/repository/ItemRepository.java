@@ -31,4 +31,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "FROM Item AS i " +
             "WHERE i.request.id = :requestId ")
     List<ItemResponseForRequest> getItemDescriptionForRequest(long requestId);
+
+    List<Item> findAllByRequestIdIn(List<Long> requestIds);
 }

@@ -85,5 +85,4 @@ class UserDataJpaTest {
     private void delete() {
         userRepository.deleteAll();
     }
-
 }

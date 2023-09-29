@@ -87,5 +87,4 @@ class UserDtoJsonTest {
         var violations = validator.validate(userDto);
         assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("должно иметь формат адреса электронной почты")));
     }
-
 }

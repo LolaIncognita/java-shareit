@@ -153,5 +153,4 @@ class UserControllerTest extends CrudOperations {
     public void afterEach() {
         userService.getAllUsers().forEach(u -> userService.deleteUser(u.getId()));
     }
-
 }

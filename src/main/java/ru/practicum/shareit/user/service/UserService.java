@@ -8,7 +8,6 @@ public interface UserService {
 
     UserDto createUser(UserDto userDto);
 
-    //Collection<UserDto> getAllUsers();
     List<UserDto> getAllUsers();
 
     UserDto getUserById(long userId);

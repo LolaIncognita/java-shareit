@@ -256,5 +256,4 @@ class ItemControllerTest extends CrudOperations {
         assertEquals(commentResponseDto.getText(), commentRequestDto.getText());
         assertEquals(commentResponseDto.getAuthorName(), booking.getBooker().getName());
     }
-
 }

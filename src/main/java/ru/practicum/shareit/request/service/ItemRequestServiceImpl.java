@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dto.ItemResponseForRequest;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDtoDescription;
 import ru.practicum.shareit.request.dto.ItemRequestDtoWithoutItems;
@@ -19,8 +20,8 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.exceptions.*;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,9 +37,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional
     public ItemRequestDtoWithoutItems createNewItemRequest(long userId, ItemRequestDtoDescription request) {
-        Optional<User> maybeUser = userRepository.findById(userId);
-        if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
             ItemRequest itemRequest = ItemRequestMapper.fromItemRequestDto(request);
             itemRequest.setRequester(user);
             itemRequest.setCreated(ZonedDateTime.now());
@@ -51,19 +52,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoWithItems> getUserItemRequests(long userId) {
-        Optional<User> mayBeUser = userRepository.findById(userId);
-        if (mayBeUser.isPresent()) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
             List<ItemRequestDtoWithItems> requests = itemRequestRepository
                     .findAllByRequesterIdOrderByCreatedDesc(userId)
                     .stream()
                     .map(ItemRequestMapper::toItemRequestWithItemsDto)
                     .collect(Collectors.toList());
 
-            for (ItemRequestDtoWithItems r : requests) {
-                List<ItemResponseForRequest> items = getItemResponsesForRequest(r.getId());
-                r.setItems(items);
-            }
-            return requests;
+            return addItemsInItemRequest(requests);
         } else {
             throw new UserNotFoundException("User with id " + userId + " was not found");
         }
@@ -78,18 +75,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(ItemRequestMapper::toItemRequestWithItemsDto)
                 .collect(Collectors.toList());
 
-        for (ItemRequestDtoWithItems r : requests) {
-            List<ItemResponseForRequest> items = getItemResponsesForRequest(r.getId());
-            r.setItems(items);
-        }
-
-        return requests;
+        return addItemsInItemRequest(requests);
     }
 
     @Override
     public ItemRequestDtoWithItems getItemRequestById(long userId, long requestId) {
-        Optional<User> maybeUser = userRepository.findById(userId);
-        if (maybeUser.isEmpty()) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
             throw new UserNotFoundException("User with id " + userId + " not found");
         }
         Optional<ItemRequest> maybeItemRequest = itemRequestRepository.findById(requestId);
@@ -105,10 +97,18 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     private List<ItemResponseForRequest> getItemResponsesForRequest(long requestId) {
-        List<ItemResponseForRequest> items = itemRepository.getItemDescriptionForRequest(requestId);
-        if (!items.isEmpty()) {
-            return items;
+        return itemRepository.getItemDescriptionForRequest(requestId);
+    }
+
+    private List<ItemRequestDtoWithItems> addItemsInItemRequest(List<ItemRequestDtoWithItems> itemRequestDtoWithItems) {
+        List<Long> itemRequestIds = itemRequestDtoWithItems.stream().map(ItemRequestDtoWithItems::getId)
+                .collect(Collectors.toList());
+        List<ItemResponseForRequest> itemsDto = itemRepository.findAllByRequestIdIn(itemRequestIds).stream().map(ItemMapper::toItemResponseForRequest)
+                .collect(Collectors.toList());
+        for (ItemRequestDtoWithItems itemRequestDto : itemRequestDtoWithItems) {
+            itemRequestDto.setItems(itemsDto.stream().filter(i -> Objects.equals(i.getRequestId(), itemRequestDto.getId()))
+                    .collect(Collectors.toList()));
         }
-        return Collections.emptyList();
+        return itemRequestDtoWithItems;
     }
 }
