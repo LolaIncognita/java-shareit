@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item.repository;
 
+import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.item.dto.ItemResponseForRequest;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -9,7 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    List<Item> findAllByOwnerId(long ownerId);
+    List<Item> findAllByOwnerId(long ownerId, Pageable page);
 
     @Modifying
     @Query("UPDATE Item e SET " +
@@ -23,5 +25,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "WHERE (LOWER(it.name) LIKE LOWER(CONCAT('%', :text, '%')) " +
             "OR LOWER(it.description) LIKE LOWER(CONCAT('%', :text, '%'))) " +
             "AND it.available = true ")
-    List<Item> searchItemByNameOrDescription(String text);
+    List<Item> searchItemByNameOrDescription(String text, Pageable page);
+
+    @Query("SELECT new ru.practicum.shareit.item.dto.ItemResponseForRequest(i.id, i.name, i.description, i.available, i.request.id) " +
+            "FROM Item AS i " +
+            "WHERE i.request.id = :requestId ")
+    List<ItemResponseForRequest> getItemDescriptionForRequest(long requestId);
 }
