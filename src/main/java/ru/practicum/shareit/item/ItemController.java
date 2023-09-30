@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -41,9 +42,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") long ownerId) {
+    public List<ItemDto> getItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") long ownerId,
+                                           @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
+                                           @RequestParam(required = false, defaultValue = "10") @Min(0) int size) {
         log.info("GET request received for items with owner id: {}", ownerId);
-        List<ItemDto> response = itemService.getAllItemsByOwnerId(ownerId);
+        List<ItemDto> response = itemService.getAllItemsByOwnerId(ownerId, from, size);
         log.info("{}", response);
         return response;
     }
@@ -59,9 +62,11 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam String text) {
+    public List<ItemDto> searchItems(@RequestParam String text,
+                                     @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
+                                     @RequestParam(required = false, defaultValue = "10") @Min(0) int size) {
         log.info("GET request received for query \"{}\"", text);
-        List<ItemDto> response = itemService.searchItems(text.toLowerCase());
+        List<ItemDto> response = itemService.searchItems(text.toLowerCase(), from, size);
         log.info("{}", response);
         return response;
     }

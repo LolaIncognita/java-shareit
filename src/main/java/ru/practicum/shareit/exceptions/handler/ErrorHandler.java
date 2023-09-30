@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exceptions.*;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -83,6 +85,20 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleBookingAlreadyExistsException(final BookingAlreadyExistsException e) {
+        e.printStackTrace();
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFoundException(final ItemRequestNotFoundException e) {
+        e.printStackTrace();
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
         e.printStackTrace();
         return new ErrorResponse(e.getMessage());
     }

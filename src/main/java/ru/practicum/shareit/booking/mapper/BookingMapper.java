@@ -68,4 +68,12 @@ public class BookingMapper {
             return new BookingClosest(bookingDtoForOwner.getId(), bookingDtoForOwner.getBookerId());
         }
     }
+
+    public static BookingClosest toBookingClosestFromBooking(Booking booking) {
+        if (booking == null) {
+            return null;
+        } else {
+            return new BookingClosest(booking.getId(), booking.getBooker().getId());
+        }
+    }
 }
