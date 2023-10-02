@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    List<Item> findAllByOwnerId(long ownerId, Pageable page);
+    List<Item> findAllByOwnerIdOrderByIdAsc(long ownerId, Pageable page);
 
     @Modifying
     @Query("UPDATE Item e SET " +
