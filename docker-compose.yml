@@ -1,4 +1,4 @@
-version: '3.8'
+version: '24.0.6'
 services:
   gateway:
     build: gateway
@@ -20,10 +20,10 @@ services:
     depends_on:
       - db
     environment:
-      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-      - USERNAME_DB=postgres
-      - PASSWORD_DB=iamroot
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=iamroot
 
   db:
     image: postgres:13.7-alpine
